@@ -10,3 +10,7 @@ spring:
 #    allow-bean-definition-overriding: true
   application:
     name: microservicecloud-dept
+  http:
+    multipart:
+      maxFileSize: 100MB
+      maxRequestSize: 100MB

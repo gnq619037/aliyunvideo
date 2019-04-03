@@ -140,9 +140,9 @@ public class UploadVideoServiceImpl implements UploadVideoService {
         /* 存储区域(可选) */
         //request.setStorageLocation("in-201703232118266-5sejdln9o.oss-cn-shanghai.aliyuncs.com");
         /* 开启默认上传进度回调 */
-        request.setPrintProgress(true);
+//        request.setPrintProgress(true);
         /* 设置自定义上传进度回调 (必须继承 VoDProgressListener) */
-        request.setProgressListener(new PutObjectProgressListener());
+//        request.setProgressListener(new PutObjectProgressListener());
         UploadVideoImpl uploader = new UploadVideoImpl();
         UploadFileStreamResponse response = uploader.uploadFileStream(request);
         System.out.print("RequestId=" + response.getRequestId() + "\n"); //请求视频点播服务的请求ID

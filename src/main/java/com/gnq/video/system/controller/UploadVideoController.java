@@ -17,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -45,15 +48,31 @@ public class UploadVideoController {
     }
 
     @RequestMapping(value = "/fileStreamUpload", method = RequestMethod.POST)
-    public Object uploadVideoFileSteam(HttpServletRequest request){
+    public Object uploadVideoFileSteam(@RequestParam("file") MultipartFile multipartfile, HttpServletRequest request){
         String contentType = request.getContentType();
         if(contentType == null || !contentType.toLowerCase().startsWith("multipart/")){
             System.out.println("文件格式不对");
             return null;
         }
         if(request instanceof MultipartHttpServletRequest){
+            MultipartHttpServletRequest multipartRequest = null;
+            try {
+                multipartRequest = (MultipartHttpServletRequest) request;
+            } catch (Exception e) {
+                return new LinkedList<MultipartFile>();
+            }
 
-            uploadVideoService.uploadFileStream(AccessKey_ID, AccessKeySecret, "demo", "demo.mp4");
+            List<MultipartFile> files = new LinkedList<MultipartFile>();
+            files = multipartRequest.getFiles("attach");
+//            Iterator<String> s = multipartRequest.getFileNames();
+//            while(s.hasNext()){
+////                File file = s.next();
+//            }
+            for(MultipartFile file : files){
+                System.out.println(file.getOriginalFilename()+"---"+file.getName());
+            }
+            System.out.println(multipartfile.getOriginalFilename());
+            uploadVideoService.uploadFileStream(AccessKey_ID, AccessKeySecret, "demo", multipartfile.getOriginalFilename());
         }
 //        multipartFile.getOriginalFilename();
 //        System.out.println(multipartFile.getName());
