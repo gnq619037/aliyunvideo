@@ -181,4 +181,9 @@ public class UploadVideoServiceImpl implements UploadVideoService {
         request.setSortBy("CreationTime:Desc");
         return client.getAcsResponse(request);
     }
+
+    @Override
+    public CreateUploadVideoResponse createUploadVideo(DefaultAcsClient client) {
+        return null;
+    }
 }

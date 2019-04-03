@@ -1,6 +1,7 @@
 package com.gnq.video.system.service;
 
 import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.vod.model.v20170321.CreateUploadVideoResponse;
 import com.aliyuncs.vod.model.v20170321.GetPlayInfoResponse;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.aliyuncs.vod.model.v20170321.SearchMediaResponse;
@@ -17,4 +18,11 @@ public interface UploadVideoService {
     GetVideoPlayAuthResponse getVideoPlayAuth(DefaultAcsClient client) throws Exception;
 
     SearchMediaResponse searchMedia(DefaultAcsClient client) throws Exception;
+
+    /**
+     * 上传
+     * @param client
+     * @return
+     */
+    CreateUploadVideoResponse createUploadVideo(DefaultAcsClient client);
 }
