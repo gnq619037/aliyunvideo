@@ -1,0 +1,12 @@
+#默认使用配置
+
+server:
+  port: 7878
+
+#开发配置
+spring:
+#  profiles: dev
+#  main:
+#    allow-bean-definition-overriding: true
+  application:
+    name: microservicecloud-dept
