@@ -1,10 +1,7 @@
 package com.gnq.video.system.controller;
 
 import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.vod.model.v20170321.CreateUploadVideoResponse;
-import com.aliyuncs.vod.model.v20170321.GetPlayInfoResponse;
-import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
-import com.aliyuncs.vod.model.v20170321.SearchMediaResponse;
+import com.aliyuncs.vod.model.v20170321.*;
 import com.gnq.video.system.entity.DefaultAcsClientDto;
 import com.gnq.video.system.service.CreateUploadVideoResponService;
 import com.gnq.video.system.service.UploadVideoService;
@@ -31,8 +28,8 @@ public class UploadVideoController {
     @Autowired
     private CreateUploadVideoResponService createUploadVideoResponService;
 
-    private final String AccessKey_ID  = "LTAI04TZLadX6QC0";
-    private final String AccessKeySecret = "1x7YbRrZrV4NkqyVAQafrsfWdgBoqp";
+    private final String AccessKey_ID  = "";
+    private final String AccessKeySecret = "";
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public Object uploadVideo(){
@@ -48,7 +45,7 @@ public class UploadVideoController {
     }
 
     @RequestMapping(value = "/fileStreamUpload", method = RequestMethod.POST)
-    public Object uploadVideoFileSteam(@RequestParam("file") MultipartFile multipartfile, HttpServletRequest request){
+    public Object uploadVideoFileSteam(@RequestParam("files") MultipartFile multipartfile, HttpServletRequest request){
         String contentType = request.getContentType();
         if(contentType == null || !contentType.toLowerCase().startsWith("multipart/")){
             System.out.println("文件格式不对");
@@ -81,6 +78,13 @@ public class UploadVideoController {
         return null;
     }
 
+    @RequestMapping(value = "/process", method = RequestMethod.POST)
+    public Object process(@RequestParam(value = "videoId") String videoId){
+        DefaultAcsClient client = DefaultAcsClientDto.initVodClient(AccessKey_ID, AccessKeySecret);
+        uploadVideoService.getProcess(client, videoId);
+        return null;
+    }
+
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object create(){
 
@@ -108,6 +112,7 @@ public class UploadVideoController {
             //播放地址
             for (GetPlayInfoResponse.PlayInfo playInfo : playInfoList) {
                 System.out.print("PlayInfo.PlayURL = " + playInfo.getPlayURL() + "\n");
+                playInfo.getStatus();
             }
             //Base信息
             System.out.print("VideoBase.Title = " + response.getVideoBase().getTitle() + "\n");
@@ -164,4 +169,35 @@ public class UploadVideoController {
     public Object sayHello(){
         return "hello";
     }
+
+    @RequestMapping(value = "/listTemplate", method = RequestMethod.POST)
+    public Object listTemplate(){
+        DefaultAcsClient client = DefaultAcsClientDto.initVodClient(AccessKey_ID, AccessKeySecret);
+        ListTranscodeTemplateGroupResponse response = new ListTranscodeTemplateGroupResponse();
+        try {
+            response = uploadVideoService.listTranscodeTemplateGroup(client);
+//            System.out.println("TranscodeTemplateGroupId = " + response.getTranscodeTemplateGroupList().get(0).getTranscodeTemplateGroupId());
+//            System.out.println("GroupName = " + response.getTranscodeTemplateGroupList().get(0).getName());
+            List<ListTranscodeTemplateGroupResponse.TranscodeTemplateGroup> groups = response.getTranscodeTemplateGroupList();
+            for(ListTranscodeTemplateGroupResponse.TranscodeTemplateGroup group : groups){
+                System.out.println("GroupName="+group.getName());
+                String groupId = group.getTranscodeTemplateGroupId();
+                if(group.getName().contains("不转码")){
+                    continue;
+                }
+                GetTranscodeTemplateGroupResponse response1 = uploadVideoService.getTranscodeTemplateGroup(client, groupId);
+
+                List<GetTranscodeTemplateGroupResponse.TranscodeTemplateGroup.TranscodeTemplate> templates = response1.getTranscodeTemplateGroup().getTranscodeTemplateList();
+                for(GetTranscodeTemplateGroupResponse.TranscodeTemplateGroup.TranscodeTemplate transcodeTemplate : templates){
+                    System.out.println(transcodeTemplate.getTranscodeTemplateId());
+                    System.out.println(transcodeTemplate.getVideo());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("ErrorMessage = " + e.getLocalizedMessage());
+        }
+        System.out.println("RequestId = " + response.getRequestId());
+        return null;
+    }
+
 }

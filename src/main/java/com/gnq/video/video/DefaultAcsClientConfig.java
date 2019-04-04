@@ -6,8 +6,8 @@ import com.aliyuncs.profile.DefaultProfile;
 
 public class DefaultAcsClientConfig {
 
-//    private static final String accessKeyId = "LTAI04TZLadX6QC0";
-//    private static final String accessKeySecret = "1x7YbRrZrV4NkqyVAQafrsfWdgBoqp";
+//    private static final String accessKeyId = "";
+//    private static final String accessKeySecret = "";
     private String accessKeyId = "";
     private String accessKeySecret = "";
 

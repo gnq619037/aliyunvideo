@@ -8,8 +8,8 @@ public class Video extends Media implements Serializable {
     private Long id;
     private String url;
     private String title;
-    String accessKeyId;
-    String accessKeySecret;
+//    String accessKeyId;
+//    String accessKeySecret;
 
     public Long getId() {
         return id;
@@ -35,19 +35,19 @@ public class Video extends Media implements Serializable {
         this.title = title;
     }
 
-    public String getAccessKeyId() {
-        return accessKeyId;
-    }
-
-    public void setAccessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-    }
-
-    public String getAccessKeySecret() {
-        return accessKeySecret;
-    }
-
-    public void setAccessKeySecret(String accessKeySecret) {
-        this.accessKeySecret = accessKeySecret;
-    }
+//    public String getAccessKeyId() {
+//        return accessKeyId;
+//    }
+//
+//    public void setAccessKeyId(String accessKeyId) {
+//        this.accessKeyId = accessKeyId;
+//    }
+//
+//    public String getAccessKeySecret() {
+//        return accessKeySecret;
+//    }
+//
+//    public void setAccessKeySecret(String accessKeySecret) {
+//        this.accessKeySecret = accessKeySecret;
+//    }
 }

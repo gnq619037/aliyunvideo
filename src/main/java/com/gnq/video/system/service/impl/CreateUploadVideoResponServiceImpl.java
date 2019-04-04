@@ -18,7 +18,7 @@ public class CreateUploadVideoResponServiceImpl implements CreateUploadVideoResp
         JSONObject userData = new JSONObject();
 
         JSONObject messageCallback = new JSONObject();
-        messageCallback.put("CallbackURL", "http://xxxxx");
+        messageCallback.put("CallbackURL", "http://localhost:7878/video/process?videoId=04a15ff2a06a4a0790d01b58483d84bd");
         messageCallback.put("CallbackType", "http");
         userData.put("MessageCallback", messageCallback.toJSONString());
 

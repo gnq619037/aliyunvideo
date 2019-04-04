@@ -1,7 +1,11 @@
 package com.gnq.video.system.service.impl;
 
+import com.aliyun.oss.event.ProgressEvent;
+import com.aliyun.oss.event.ProgressEventType;
+import com.aliyun.oss.model.ProcessObjectRequest;
 import com.aliyun.vod.upload.impl.PutObjectProgressListener;
 import com.aliyun.vod.upload.impl.UploadVideoImpl;
+import com.aliyun.vod.upload.impl.VoDProgressListener;
 import com.aliyun.vod.upload.req.UploadFileStreamRequest;
 import com.aliyun.vod.upload.req.UploadURLStreamRequest;
 import com.aliyun.vod.upload.req.UploadVideoRequest;
@@ -12,6 +16,8 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.vod.model.v20170321.*;
 import com.gnq.video.system.service.UploadVideoService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UploadVideoServiceImpl implements UploadVideoService {
@@ -122,9 +128,9 @@ public class UploadVideoServiceImpl implements UploadVideoService {
         /* 是否使用默认水印(可选)，指定模板组ID时，根据模板组配置确定是否使用默认水印*/
         //request.setShowWaterMark(true);
         /* 设置上传完成后的回调URL(可选)，建议通过点播控制台配置消息监听事件，参见文档 https://help.aliyun.com/document_detail/57029.html */
-        //request.setCallback("http://callback.sample.com");
+        request.setCallback("http://callback.sample.com");
         /* 自定义消息回调设置，参数说明参考文档 https://help.aliyun.com/document_detail/86952.html#UserData */
-        //request.setUserData(""{\"Extend\":{\"test\":\"www\",\"localId\":\"xxxx\"},\"MessageCallback\":{\"CallbackURL\":\"http://test.test.com\"}}"");
+        request.setUserData("{\"Extend\":{\"test\":\"www\",\"localId\":\"xxxx\"},\"MessageCallback\":{\"CallbackURL\":\"http://localhost:7878/video/process\"}}");
         /* 视频分类ID(可选) */
         //request.setCateId(0);
         /* 视频标签,多个用逗号分隔(可选) */
@@ -140,14 +146,17 @@ public class UploadVideoServiceImpl implements UploadVideoService {
         /* 存储区域(可选) */
         //request.setStorageLocation("in-201703232118266-5sejdln9o.oss-cn-shanghai.aliyuncs.com");
         /* 开启默认上传进度回调 */
-//        request.setPrintProgress(true);
+        request.setPrintProgress(true);
         /* 设置自定义上传进度回调 (必须继承 VoDProgressListener) */
-//        request.setProgressListener(new PutObjectProgressListener());
+        request.setProgressListener(new PutObjectProgressListener());
         UploadVideoImpl uploader = new UploadVideoImpl();
         UploadFileStreamResponse response = uploader.uploadFileStream(request);
+        System.out.println(request.getProgressListener());
+        request.getProgressListener().progressChanged(new ProgressEvent(ProgressEventType.REQUEST_BYTE_TRANSFER_EVENT));
         System.out.print("RequestId=" + response.getRequestId() + "\n"); //请求视频点播服务的请求ID
         if (response.isSuccess()) {
             System.out.print("VideoId=" + response.getVideoId() + "\n");
+            request.getProgressListener().onVidReady(response.getVideoId());
         } else {
             /* 如果设置回调URL无效，不影响视频上传，可以返回VideoId同时会返回错误码。其他情况上传失败时，VideoId为空，此时需要根据返回错误码分析具体错误原因 */
             System.out.print("VideoId=" + response.getVideoId() + "\n");
@@ -160,6 +169,7 @@ public class UploadVideoServiceImpl implements UploadVideoService {
     public GetPlayInfoResponse getPlayInfo(DefaultAcsClient client) throws Exception {
         GetPlayInfoRequest request = new GetPlayInfoRequest();
         request.setVideoId("e4a871b7abf8486388f9d0028c84747c");
+
         return client.getAcsResponse(request);
     }
 
@@ -184,6 +194,41 @@ public class UploadVideoServiceImpl implements UploadVideoService {
 
     @Override
     public CreateUploadVideoResponse createUploadVideo(DefaultAcsClient client) {
+        return null;
+    }
+
+    @Override
+    public ListTranscodeTemplateGroupResponse listTranscodeTemplateGroup(DefaultAcsClient client) throws Exception{
+        ListTranscodeTemplateGroupRequest request = new ListTranscodeTemplateGroupRequest();
+        return client.getAcsResponse(request);
+    }
+
+    @Override
+    public GetTranscodeTemplateGroupResponse getTranscodeTemplateGroup(DefaultAcsClient client, String groupId) throws Exception {
+        GetTranscodeTemplateGroupRequest request = new GetTranscodeTemplateGroupRequest();
+        request.setTranscodeTemplateGroupId(groupId);
+        return client.getAcsResponse(request);
+    }
+
+    @Override
+    public GetTranscodeSummaryResponse getTranscodeSummary(DefaultAcsClient client, List<String> videoIds) throws Exception {
+        GetTranscodeSummaryRequest request = new GetTranscodeSummaryRequest();
+        StringBuffer videos = new StringBuffer("");
+        for(String video : videoIds){
+            videos.append(video+",");
+        }
+//        if(videos)
+        request.setVideoIds("14f35e2c5ca348831c2d2ae1d5b2801,1dd4516420d247c777538c9aaafb01");
+        return client.getAcsResponse(request);
+    }
+
+    @Override
+    public PutObjectProgressListener getProcess(DefaultAcsClient client, String videoId) {
+        PutObjectProgressListener listener = new PutObjectProgressListener();
+        listener.setVideoId(videoId);
+        ProgressEvent event = new ProgressEvent(ProgressEventType.TRANSFER_PART_COMPLETED_EVENT);
+        listener.progressChanged(event);
+        System.out.println("process");
         return null;
     }
 }

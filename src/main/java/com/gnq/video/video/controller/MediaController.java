@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,15 +22,22 @@ public class MediaController {
     @Autowired
     private VideoService videoService;
 
-    private static final String accessKeyId = "LTAI04TZLadX6QC0";
-    private static final String accessKeySecret = "1x7YbRrZrV4NkqyVAQafrsfWdgBoqp";
-
+    private static final String accessKeyId = "";
+    private static final String accessKeySecret = "";
+//    @RequestParam("file") MultipartFile multipartfile,
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public Object uploadVideo(@RequestParam("file") MultipartFile multipartfile, HttpServletRequest request){
+    public Object uploadVideo(@RequestParam("file") MultipartFile multipartfile,HttpServletRequest request){
         Map<String, Object> resultMap = new HashMap<>();
         String fileRealName = multipartfile.getOriginalFilename();//获得原始文件名;
         String fileName = multipartfile.getName();
-        videoService.uploadFileStream(accessKeyId, accessKeySecret, fileName, fileRealName);
+        InputStream inputStream = null;
+        try{
+            inputStream = multipartfile.getInputStream();
+        } catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+        videoService.uploadStream(accessKeyId, accessKeySecret, fileName, fileRealName, inputStream);
         resultMap.put("success", true);
         return resultMap;
     }

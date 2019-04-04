@@ -6,8 +6,8 @@ import com.aliyuncs.profile.DefaultProfile;
 
 public class DefaultAcsClientDto {
 
-//    private static final String accessKeyId = "LTAI04TZLadX6QC0";
-//    private static final String accessKeySecret = "1x7YbRrZrV4NkqyVAQafrsfWdgBoqp";
+//    private static final String accessKeyId = "";
+//    private static final String accessKeySecret = "";
 
     public static DefaultAcsClient initVodClient(String accessKeyId, String accessKeySecret) throws ClientException{
         String regionId = "cn-shanghai";  // 点播服务接入区域
